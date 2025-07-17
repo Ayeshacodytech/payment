@@ -15,6 +15,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/signup" element={<Signup />} />
+            <Route path="/" element={<Signin />} />
             <Route path="/signin" element={<Signin />} />
             <Route
               path="/dashboard"
@@ -26,11 +27,10 @@ function App() {
             <Route
               path="/sendmoney"
               element={
-                <ProtectedRoute>
                   <SendMoney />
-                </ProtectedRoute>
               }
             />
+            <Route path="*" element={<Navigate to="/signin" />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>
