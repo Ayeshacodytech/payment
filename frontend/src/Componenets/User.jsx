@@ -25,7 +25,7 @@ export const Users = ({}) => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3000/api/v1/user/bulk?filter=" +
+          "https://payment-ez9j.onrender.com/api/v1/user/bulk?filter=" +
             filter +
             "&page=" +
             currentPage

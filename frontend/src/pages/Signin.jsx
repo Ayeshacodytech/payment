@@ -23,16 +23,17 @@ export const Signin = () => {
     setError("");
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/v1/user/signin",
+        "https://payment-ez9j.onrender.com/api/v1/user/signin",
         {
           username,
           password,
         }
       );
-      //login(response.data.token);
       localStorage.setItem("token", response.data.token);
+
       navigate("/dashboard");
     } catch (err) {
+      console.error("Sign-in error:", err);
       setError("Sign in failed, Please check your credentials and try again");
     } finally {
       setLoading(false);

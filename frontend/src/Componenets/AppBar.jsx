@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../authentications/AuthContext"; // Import useAuth
 import { UserDropdown } from "./UserDropdown";
 
 const getUserDetails = async () => {
@@ -10,11 +11,14 @@ const getUserDetails = async () => {
   }
 
   try {
-    const response = await axios.get("http://localhost:3000/api/v1/user/me", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axios.get(
+      "https://payment-ez9j.onrender.com/api/v1/user/me",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Error fetching user details:", error);
@@ -28,6 +32,8 @@ export const Appbar = () => {
   const [error, setError] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
+  const { logout } = useAuth(); // Use logout from AuthContext
+
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
@@ -41,23 +47,30 @@ export const Appbar = () => {
     };
     fetchUserDetails();
   }, []);
+
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    logout(); // Use the logout function from AuthContext
     navigate("/signin");
   };
+
   const handleUpdate = async (updatedUser) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.put("http://localhost:3000/api/v1/user/me", updatedUser, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await axios.put(
+        "https://payment-ez9j.onrender.com/api/v1/user/me",
+        updatedUser,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setUser(updatedUser);
     } catch (error) {
       console.error("Error updating user details:", error);
     }
   };
+
   return (
     <div className="shadow h-14 flex justify-between">
       <div className="flex flex-col justify-center h-full ml-4">SPAY</div>

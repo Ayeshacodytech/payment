@@ -9,26 +9,33 @@ import { Signin } from "./pages/Signin"
 import { Signup } from "./pages/Signup"
 
 function App() {
-  return <div>
-    <AuthProvider>
-    <BrowserRouter>
-
-      <Routes>
-
-        <Route path="/signup" element={<Signup/>}/>
-        <Route path="/" element={<Signin />} />
-        <Route
-        path="/dashboard"
-        element={<ProtectedRoute><Dashboard/></ProtectedRoute>
-        }/>
-        <Route
-        path="*" element={<Navigate to={"/dashboard"}/>}/>
-        <Route path="/sendmoney" element={<ProtectedRoute><SendMoney/></ProtectedRoute>}/>
-        <Route path="*" element={<Navigate to="/dashboard" />} />
-      </Routes>
-    </BrowserRouter>
-    </AuthProvider>
-</div>
+  return (
+    <div>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/signin" element={<Signin />} />
+            <Route
+              path="/dashboard"
+              element={
+                  <Dashboard />
+              }
+            />
+            
+            <Route
+              path="/sendmoney"
+              element={
+                <ProtectedRoute>
+                  <SendMoney />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </div>
+  );
     
   
 }

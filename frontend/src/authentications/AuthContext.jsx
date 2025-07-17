@@ -12,7 +12,7 @@ export const AuthProvider=({children})=>{
         if(token){
             setIsAuthenticated(true)
         }
-    },[]);
+    },[isAuthenticated]);
 
     const login=(token)=>{
         localStorage.setItem('token',token);
