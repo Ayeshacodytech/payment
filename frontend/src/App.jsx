@@ -5,6 +5,8 @@ import { AuthProvider } from "./authentications/AuthContext"
 import { ProtectedRoute } from "./authentications/ProtectedRoute"
 import { Dashboard } from "./pages/Dashboard"
 import { SendMoney } from "./pages/SendMoney"
+import { Transactions } from "./pages/Transactions"
+import { AddMoney } from "./pages/AddMoney"
 import { Signin } from "./pages/Signin"
 import { Signup } from "./pages/Signup"
 
@@ -28,6 +30,18 @@ function App() {
               path="/sendmoney"
               element={
                   <SendMoney />
+              }
+            />
+            <Route
+              path="/transactions"
+              element={
+                  <Transactions />
+              }
+            />
+            <Route
+              path="/addmoney"
+              element={
+                  <AddMoney />
               }
             />
             <Route path="*" element={<Navigate to="/signin" />} />
