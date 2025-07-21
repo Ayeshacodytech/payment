@@ -1,113 +1,120 @@
-import axios from "axios";
+
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { Button } from "./Button";
-import { jwtDecode } from "jwt-decode";
-const debounce = (func, delay) => {
-  let timerId;
-  return (...args) => {
-    clearTimeout(timerId);
-    timerId = setTimeout(() => {
-      func(...args);
-    }, delay);
-  };
-};
-export const Users = ({}) => {
+import { useNavigate } from "react-router-dom";
+
+export const Users = () => {
   const [users, setUsers] = useState([]);
   const [filter, setFilter] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const aToken = localStorage.getItem("token");
-  const decodedToken = jwtDecode(aToken);
-  const currentUserId = decodedToken.userId;
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
+        const token = localStorage.getItem("token");
         const response = await axios.get(
-          "https://payment-ez9j.onrender.com/api/v1/user/bulk?filter=" +
-            filter +
-            "&page=" +
-            currentPage
+          `https://payment-ez9j.onrender.com/api/v1/user/bulk?filter=${filter}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
-        const filteredUsers = response.data.user.filter(
-          (user) => user._id !== currentUserId
-        );
-        setUsers(filteredUsers);
-        setTotalPages(response.data.totalPages);
+        setUsers(response.data.user);
       } catch (error) {
-        console.error("Error fetching users", error);
+        console.error("Error fetching users:", error);
+      } finally {
+        setLoading(false);
       }
     };
-    const debouncedFetchUsers = debounce(fetchUsers, 500); // Adjust debounce delay as needed
 
-    debouncedFetchUsers(); // Initial call
+    const debounceTimer = setTimeout(() => {
+      fetchUsers();
+    }, 500);
 
-    return () => {
-      clearTimeout(debouncedFetchUsers); // Clear the debounce timer on component unmount
-    };
-  }, [filter, currentPage]);
-  const navigate = useNavigate();
-  const goToPage = (page) => {
-    setCurrentPage(page);
-  };
+    return () => clearTimeout(debounceTimer);
+  }, [filter]);
+
   return (
-    <>
-      <div className="font-bold mt-6 text-lg">Users</div>
-      <div className="my-2">
+    <div className="bg-white rounded-xl shadow-lg p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-gray-900">Send Money</h2>
+        <span className="text-sm text-gray-500">Choose a recipient</span>
+      </div>
+
+      <div className="relative mb-6">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <span className="text-gray-400">🔍</span>
+        </div>
         <input
-          onChange={(e) => {
-            setFilter(e.target.value);
-          }}
+          onChange={(e) => setFilter(e.target.value)}
           type="text"
-          placeholder="Search users..."
-          className="w-full px-2 py-1 border rounded border-slate-200"
-        ></input>
+          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder="Search users by name..."
+          value={filter}
+        />
       </div>
-      <div>
-        {users.map((user) => (
-          <User user={user} navigate={navigate} />
-        ))}
-      </div>
-      <div className="flex justify-center mt-4">
-        {[...Array(totalPages).keys()].map((page) => (
-          <button
-            key={page}
-            onClick={() => goToPage(page + 1)}
-            className="mx-1 px-2 py-1 border rounded bg-gray-200"
-          >
-            {page + 1}
-          </button>
-        ))}
-      </div>
-    </>
+
+      {loading ? (
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="animate-pulse flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-300 rounded w-24"></div>
+                  <div className="h-3 bg-gray-300 rounded w-32"></div>
+                </div>
+              </div>
+              <div className="h-10 bg-gray-300 rounded w-20"></div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-3 max-h-96 overflow-y-auto">
+          {users.length > 0 ? (
+            users.map((user) => <User key={user._id} user={user} />)
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <span className="text-4xl mb-2 block">👥</span>
+              <p>No users found</p>
+              <p className="text-sm">Try searching with a different name</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
 
-function User({ user, navigate }) {
+function User({ user }) {
+  const navigate = useNavigate();
+
   return (
-    <div className="flex justify-between">
-      <div className="flex">
-        <div className="rounded-full h-12 w-12 bg-slate-200 flex justify-center mt-1 mr-2">
-          <div className="flex flex-col justify-center h-full text-xl">
-            {user.firstName[0]}
-          </div>
+    <div className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg transition-colors border border-gray-100">
+      <div className="flex items-center space-x-4">
+        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+          <span className="text-white font-semibold text-lg">
+            {user.firstName[0].toUpperCase()}
+          </span>
         </div>
-        <div className="flex flex-col justify-center h-ful">
-          <div>
+        <div>
+          <div className="text-lg font-semibold text-gray-900">
             {user.firstName} {user.lastName}
           </div>
+          <div className="text-sm text-gray-500">{user.username}</div>
         </div>
       </div>
 
-      <div className="flex flex-col justify-center h-ful">
-        <Button
-          onClick={(e) => {
-            navigate("/sendmoney?id=" + user._id + "&name=" + user.firstName);
-          }}
-          label={"Send Money"}
-        />
-      </div>
+      <button
+        onClick={() => {
+          navigate("/sendmoney?id=" + user._id + "&name=" + user.firstName);
+        }}
+        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+      >
+        Send Money
+      </button>
     </div>
   );
 }
