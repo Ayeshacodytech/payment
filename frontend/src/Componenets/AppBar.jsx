@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../authentications/AuthContext"; // Import useAuth
+import { useAuth } from "../authentications/AuthContext";
 import { UserDropdown } from "./UserDropdown";
 
 const getUserDetails = async () => {
@@ -32,7 +32,7 @@ export const Appbar = () => {
   const [error, setError] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
-  const { logout } = useAuth(); // Use logout from AuthContext
+  const { logout } = useAuth();
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -49,7 +49,7 @@ export const Appbar = () => {
   }, []);
 
   const handleLogout = () => {
-    logout(); // Use the logout function from AuthContext
+    logout();
     navigate("/signin");
   };
 
@@ -72,25 +72,46 @@ export const Appbar = () => {
   };
 
   return (
-    <div className="shadow h-14 flex justify-between">
-      <div className="flex flex-col justify-center h-full ml-4">SPAY</div>
-      <div className="flex">
+    <div className="bg-gradient-to-r from-blue-600 to-purple-700 shadow-lg h-16 flex justify-between items-center">
+      <div className="flex items-center ml-6">
+        <div className="text-white text-2xl font-bold tracking-wide">
+          💳 SPAY
+        </div>
+        <div className="ml-8 hidden md:flex space-x-6">
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="text-white hover:text-blue-200 transition-colors font-medium"
+          >
+            Dashboard
+          </button>
+          <button
+            onClick={() => navigate('/sendmoney')}
+            className="text-white hover:text-blue-200 transition-colors font-medium"
+          >
+            Send Money
+          </button>
+        </div>
+      </div>
+
+      <div className="flex items-center relative">
         {user && user.firstName && (
           <>
-            <div
-              className="flex flex-col justify-center h-full mr-4"
-              onClick={() => setShowDropdown(!showDropdown)}
-            >
-              Welcome, {user.firstName.toUpperCase()}
+            <div className="hidden md:flex items-center mr-4 text-white">
+              <span className="text-sm">Welcome back,</span>
+              <span className="ml-1 font-semibold">{user.firstName}</span>
             </div>
+
             <div
-              className="rounded-full h-12 w-12 bg-slate-200 flex justify-center mt-1 mr-2"
+              className="relative flex items-center cursor-pointer group"
               onClick={() => setShowDropdown(!showDropdown)}
             >
-              <div className="flex flex-col justify-center h-full text-xl">
-                {user.firstName[0].toUpperCase()}
+              <div className="rounded-full h-12 w-12 bg-white bg-opacity-20 backdrop-blur-sm flex justify-center items-center mr-4 group-hover:bg-opacity-30 transition-all">
+                <div className="text-white text-lg font-bold">
+                  {user.firstName[0].toUpperCase()}
+                </div>
               </div>
             </div>
+
             {showDropdown && (
               <UserDropdown
                 user={user}
